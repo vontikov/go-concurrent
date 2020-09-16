@@ -2,35 +2,40 @@ package concurrent
 
 // Collection defines generic collection
 type Collection interface {
-	Size() int // Size returns the collection size
-	Clear()    // Clear clears the collection
+	// Size returns the collection size
+	Size() int
+	// Clear clears the collection
+	Clear()
 }
 
 // List defines ordered collection of elements which may contain duplicates
 type List interface {
 	Collection
-
-	Add(element interface{})   // Add adds a new element into the List
-	Get(index int) interface{} // Get returns the element specified by its index
+	// Add adds the element e into the List
+	Add(e interface{})
+	// Get returns the element specified by its index i
+	Get(i int) interface{}
 }
 
 // Set defines unordered collection of element which may not contain duplicates
 type Set interface {
 	Collection
-
-	Add(interface{})
-	Contains(interface{}) bool
+	// Add adds the element e into the Set
+	Add(e interface{})
+	// Contains returns true if the Set contains the specified element e
+	Contains(e interface{}) bool
 }
 
 // Queue defines ordered in FIFO manner collection of elements which may contain
 // duplicates
 type Queue interface {
 	Collection
-
-	Offer(element interface{})
+	// Offer inserts the element e into the Queue
+	Offer(e interface{})
+	// Poll retrieves and removes the head of the Queue; returns nil if the Queue is empty
 	Poll() interface{}
+	// Peek retrieves, but does not remove, the head of the queue; returns nil if the Queue is empty
 	Peek() interface{}
-	Capacity() int
 }
 
 // Map represents a collection of key-value pairs
