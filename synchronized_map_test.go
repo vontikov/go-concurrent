@@ -35,10 +35,8 @@ func TestSynchronizedMapPutGet(t *testing.T) {
 	}
 
 	wg.Wait()
-
 	assert.Equal(t, n*n, m.Size(), "All items should be added")
 
-	// extract and sort
 	s := make([]int, 0, m.Size())
 	for i := 0; i < n*n; i++ {
 		s = append(s, m.Get(i).(int))
@@ -91,7 +89,6 @@ func TestSynchronizedMapPutIfAbsent(t *testing.T) {
 	wg.Wait()
 	assert.Equal(t, n*n, m.Size(), "All items should be added")
 
-	// extract and sort
 	s := make([]int, 0, m.Size())
 	for i := 0; i < n*n; i++ {
 		s = append(s, m.Get(i).(int))
@@ -120,4 +117,44 @@ func TestSynchronizedMapPutIfAbsent(t *testing.T) {
 
 	wg.Wait()
 	assert.Equal(t, n*n, m.Size(), "Items should not be added")
+}
+
+func TestSynchronizedMapRange(t *testing.T) {
+	const n = 100
+	const big = n * n << 2
+
+	m := NewSynchronizedMap(big)
+
+	var wg sync.WaitGroup
+	base := 0
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(b int) {
+			for i := 0; i < n; i++ {
+				k := i + b
+				v := big + i + b
+				m.Put(k, v)
+			}
+			wg.Done()
+		}(base)
+		base += n
+	}
+
+	wg.Wait()
+	assert.Equal(t, n*n, m.Size(), "All items should be added")
+
+	var keys, values []int
+	m.Range(func(k, v interface{}) bool {
+		keys = append(keys, k.(int))
+		values = append(values, v.(int))
+		return true
+	})
+
+	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
+	sort.Slice(values, func(i, j int) bool { return values[i] < values[j] })
+
+	for i := 0; i < n*n; i++ {
+		assert.Equal(t, i, keys[i], "Keys should be unique")
+		assert.Equal(t, big+i, values[i], "Values should be unique")
+	}
 }

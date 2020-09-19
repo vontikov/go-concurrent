@@ -54,4 +54,8 @@ type Map interface {
 	// PutIfAbsent puts the key-value pair (and returns true)
 	// only if the key is absent, otherwise it returns false
 	PutIfAbsent(key interface{}, value interface{}) bool
+
+	// Range calls f sequentially for each key and value present in the map.
+	// If f returns false, range stops the iteration.
+	Range(f func(key, value interface{}) bool)
 }
