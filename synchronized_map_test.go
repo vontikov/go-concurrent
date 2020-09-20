@@ -20,6 +20,8 @@ func TestSynchronizedMapPutGet(t *testing.T) {
 	m := NewSynchronizedMap(big)
 
 	var wg sync.WaitGroup
+
+	// populate the map
 	base := 0
 	for i := 0; i < n; i++ {
 		wg.Add(1)
@@ -27,14 +29,30 @@ func TestSynchronizedMapPutGet(t *testing.T) {
 			for i := 0; i < n; i++ {
 				k := i + b
 				v := big + i + b
-				m.Put(k, v)
+				assert.Nil(t, m.Put(k, v))
 			}
 			wg.Done()
 		}(base)
 		base += n
 	}
-
 	wg.Wait()
+
+	// make sure the old values are overridden
+	base = 0
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(b int) {
+			for i := 0; i < n; i++ {
+				k := i + b
+				v := big + i + b
+				assert.NotNil(t, m.Put(k, v))
+			}
+			wg.Done()
+		}(base)
+		base += n
+	}
+	wg.Wait()
+
 	assert.Equal(t, n*n, m.Size(), "All items should be added")
 
 	s := make([]int, 0, m.Size())

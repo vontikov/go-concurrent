@@ -42,10 +42,11 @@ type Queue interface {
 type Map interface {
 	Collection
 
-	// Put put a new key-value pair into the Map
-	// if the key-value pair already exists it overwrites the existing value
-	// with the new value
-	Put(key interface{}, value interface{})
+	// Put puts a new key-value pair into the Map.
+	// If the key already exists overwrites the existing value with the new one.
+	// Returns the previous value associated with key, or nil if there was no mapping
+	// for key.
+	Put(key interface{}, value interface{}) interface{}
 
 	// Get returns the value specified by the key if the key-value pair is
 	// present, othervise returns nil

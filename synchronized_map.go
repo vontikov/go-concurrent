@@ -33,10 +33,12 @@ func (m *SynchronizedMap) Clear() {
 }
 
 // Put implements Map.Put
-func (m *SynchronizedMap) Put(k interface{}, v interface{}) {
+func (m *SynchronizedMap) Put(k interface{}, v interface{}) interface{} {
 	m.Lock()
+	o, _ := m.data[k]
 	m.data[k] = v
 	m.Unlock()
+	return o
 }
 
 // Get implements Map.Get
@@ -59,7 +61,7 @@ func (m *SynchronizedMap) PutIfAbsent(k interface{}, v interface{}) bool {
 	return true
 }
 
-// PutIfAbsent implements Map.Range
+// Range implements Map.Range
 func (m *SynchronizedMap) Range(f func(k, v interface{}) bool) {
 	m.RLock()
 	defer m.RUnlock()
