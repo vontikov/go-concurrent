@@ -6,7 +6,7 @@ import (
 
 // SynchronizedRingQueue is a safe for concurrent use Queue implementation
 type SynchronizedRingQueue struct {
-	sync.RWMutex
+	mux               sync.RWMutex
 	buf               []interface{}
 	head, tail, count int
 }
@@ -23,15 +23,15 @@ func NewSynchronizedRingQueue(initialCapacity int) Queue {
 
 // Size implements Queue.Size
 func (q *SynchronizedRingQueue) Size() int {
-	q.RLock()
-	defer q.RUnlock()
+	q.mux.RLock()
+	defer q.mux.RUnlock()
 	return q.count
 }
 
 // Clear implements Queue.Clear
 func (q *SynchronizedRingQueue) Clear() {
-	q.Lock()
-	defer q.Unlock()
+	q.mux.Lock()
+	defer q.mux.Unlock()
 	q.head = 0
 	q.tail = 0
 	q.count = 0
@@ -39,8 +39,8 @@ func (q *SynchronizedRingQueue) Clear() {
 
 // Offer implements Queue.Offer
 func (q *SynchronizedRingQueue) Offer(e interface{}) {
-	q.Lock()
-	defer q.Unlock()
+	q.mux.Lock()
+	defer q.mux.Unlock()
 
 	if q.count == len(q.buf) {
 		q.resize()
@@ -53,8 +53,8 @@ func (q *SynchronizedRingQueue) Offer(e interface{}) {
 
 // Poll implements Queue.Poll
 func (q *SynchronizedRingQueue) Poll() interface{} {
-	q.Lock()
-	defer q.Unlock()
+	q.mux.Lock()
+	defer q.mux.Unlock()
 
 	if q.count <= 0 {
 		return nil
@@ -69,8 +69,8 @@ func (q *SynchronizedRingQueue) Poll() interface{} {
 
 // Peek implements Queue.Peek
 func (q *SynchronizedRingQueue) Peek() interface{} {
-	q.Lock()
-	defer q.Unlock()
+	q.mux.Lock()
+	defer q.mux.Unlock()
 
 	if q.count <= 0 {
 		return nil
@@ -81,8 +81,8 @@ func (q *SynchronizedRingQueue) Peek() interface{} {
 
 // Capacity implements Queue.Capacity
 func (q *SynchronizedRingQueue) Capacity() int {
-	q.RLock()
-	defer q.RUnlock()
+	q.mux.RLock()
+	defer q.mux.RUnlock()
 	return len(q.buf)
 }
 

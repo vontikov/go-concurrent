@@ -6,7 +6,7 @@ import (
 
 // SynchronizedMap is a safe for concurrent use Map implementation
 type SynchronizedMap struct {
-	sync.RWMutex
+	mux  sync.RWMutex
 	data map[interface{}]interface{}
 }
 
@@ -19,52 +19,52 @@ func NewSynchronizedMap(capacity int) Map {
 
 // Size implements Map.Size
 func (m *SynchronizedMap) Size() int {
-	m.RLock()
+	m.mux.RLock()
 	r := len(m.data)
-	m.RUnlock()
+	m.mux.RUnlock()
 	return r
 }
 
 // Clear implements Map.Clear
 func (m *SynchronizedMap) Clear() {
-	m.Lock()
+	m.mux.Lock()
 	m.data = make(map[interface{}]interface{})
-	m.Unlock()
+	m.mux.Unlock()
 }
 
 // Put implements Map.Put
 func (m *SynchronizedMap) Put(k interface{}, v interface{}) interface{} {
-	m.Lock()
+	m.mux.Lock()
 	o, _ := m.data[k]
 	m.data[k] = v
-	m.Unlock()
+	m.mux.Unlock()
 	return o
 }
 
 // Get implements Map.Get
 func (m *SynchronizedMap) Get(k interface{}) interface{} {
-	m.RLock()
+	m.mux.RLock()
 	r := m.data[k]
-	m.RUnlock()
+	m.mux.RUnlock()
 	return r
 }
 
 // PutIfAbsent implements Map.PutIfAbsent
 func (m *SynchronizedMap) PutIfAbsent(k interface{}, v interface{}) bool {
-	m.Lock()
+	m.mux.Lock()
 	if _, ok := m.data[k]; ok {
-		m.Unlock()
+		m.mux.Unlock()
 		return false
 	}
 	m.data[k] = v
-	m.Unlock()
+	m.mux.Unlock()
 	return true
 }
 
 // Range implements Map.Range
 func (m *SynchronizedMap) Range(f func(k, v interface{}) bool) {
-	m.RLock()
-	defer m.RUnlock()
+	m.mux.RLock()
+	defer m.mux.RUnlock()
 	for k, v := range m.data {
 		if !f(k, v) {
 			return

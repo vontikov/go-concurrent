@@ -6,7 +6,7 @@ import (
 
 // SynchronizedSet is a safe for concurrent use Set implementation
 type SynchronizedSet struct {
-	sync.RWMutex
+	mux      sync.RWMutex
 	data     map[interface{}]bool
 	capacity int
 }
@@ -21,30 +21,30 @@ func NewSynchronizedSet(capacity int) Set {
 
 // Size implements Set.Size
 func (s *SynchronizedSet) Size() int {
-	s.RLock()
+	s.mux.RLock()
 	r := len(s.data)
-	s.RUnlock()
+	s.mux.RUnlock()
 	return r
 }
 
 // Clear implements Set.Clear
 func (s *SynchronizedSet) Clear() {
-	s.Lock()
+	s.mux.Lock()
 	s.data = make(map[interface{}]bool, s.capacity)
-	s.Unlock()
+	s.mux.Unlock()
 }
 
 // Add implements Set.Add
 func (s *SynchronizedSet) Add(v interface{}) {
-	s.Lock()
+	s.mux.Lock()
 	s.data[v] = true
-	s.Unlock()
+	s.mux.Unlock()
 }
 
 // Contains implements Set.Contains
 func (s *SynchronizedSet) Contains(v interface{}) bool {
-	s.RLock()
+	s.mux.RLock()
 	r := s.data[v]
-	s.RUnlock()
+	s.mux.RUnlock()
 	return r
 }
