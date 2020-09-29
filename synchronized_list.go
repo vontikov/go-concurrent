@@ -6,7 +6,7 @@ import (
 
 // SynchronizedList is a safe for concurrent use List implementation
 type SynchronizedList struct {
-	mux      sync.RWMutex
+	sync.RWMutex
 	data     []interface{}
 	capacity int
 }
@@ -21,30 +21,30 @@ func NewSynchronizedList(capacity int) List {
 
 // Size implements List.Size
 func (l *SynchronizedList) Size() int {
-	l.mux.RLock()
+	l.RLock()
 	r := len(l.data)
-	l.mux.RUnlock()
+	l.RUnlock()
 	return r
 }
 
 // Clear implements List.Clear
 func (l *SynchronizedList) Clear() {
-	l.mux.Lock()
+	l.Lock()
 	l.data = make([]interface{}, 0, l.capacity)
-	l.mux.Unlock()
+	l.Unlock()
 }
 
 // Add implements List.Clear
 func (l *SynchronizedList) Add(v interface{}) {
-	l.mux.Lock()
+	l.Lock()
 	l.data = append(l.data, v)
-	l.mux.Unlock()
+	l.Unlock()
 }
 
 // Get implements List.Clear
 func (l *SynchronizedList) Get(i int) interface{} {
-	l.mux.RLock()
+	l.RLock()
 	v := l.data[i]
-	l.mux.RUnlock()
+	l.RUnlock()
 	return v
 }

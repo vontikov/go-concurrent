@@ -176,3 +176,89 @@ func TestSynchronizedMapRange(t *testing.T) {
 		assert.Equal(t, big+i, values[i], "Values should be unique")
 	}
 }
+
+func TestSynchronizedMapRemove(t *testing.T) {
+	const n = 100
+	const big = n * n << 2
+
+	m := NewSynchronizedMap(big)
+
+	var wg sync.WaitGroup
+
+	// populate the map
+	base := 0
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(b int) {
+			for i := 0; i < n; i++ {
+				k := i + b
+				v := big + i + b
+				assert.Nil(t, m.Put(k, v))
+			}
+			wg.Done()
+		}(base)
+		base += n
+	}
+	wg.Wait()
+
+	assert.Equal(t, n*n, m.Size(), "All items should be added")
+
+	// remove the mappings
+	base = 0
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(b int) {
+			for i := 0; i < n; i++ {
+				k := i + b
+				m.Remove(k)
+			}
+			wg.Done()
+		}(base)
+		base += n
+	}
+	wg.Wait()
+
+	assert.Equal(t, 0, m.Size(), "All items should be removed")
+}
+
+func TestSynchronizedMapContains(t *testing.T) {
+	const n = 100
+	const big = n * n << 2
+
+	m := NewSynchronizedMap(big)
+
+	var wg sync.WaitGroup
+
+	// populate the map
+	base := 0
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(b int) {
+			for i := 0; i < n; i++ {
+				k := i + b
+				v := big + i + b
+				assert.Nil(t, m.Put(k, v))
+			}
+			wg.Done()
+		}(base)
+		base += n
+	}
+	wg.Wait()
+
+	assert.Equal(t, n*n, m.Size(), "All items should be added")
+
+	// check the mappings
+	base = 0
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(b int) {
+			for i := 0; i < n; i++ {
+				k := i + b
+				assert.True(t, m.Contains(k))
+			}
+			wg.Done()
+		}(base)
+		base += n
+	}
+	wg.Wait()
+}

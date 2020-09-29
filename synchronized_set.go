@@ -6,7 +6,7 @@ import (
 
 // SynchronizedSet is a safe for concurrent use Set implementation
 type SynchronizedSet struct {
-	mux      sync.RWMutex
+	sync.RWMutex
 	data     map[interface{}]bool
 	capacity int
 }
@@ -21,30 +21,48 @@ func NewSynchronizedSet(capacity int) Set {
 
 // Size implements Set.Size
 func (s *SynchronizedSet) Size() int {
-	s.mux.RLock()
+	s.RLock()
 	r := len(s.data)
-	s.mux.RUnlock()
+	s.RUnlock()
 	return r
 }
 
 // Clear implements Set.Clear
 func (s *SynchronizedSet) Clear() {
-	s.mux.Lock()
+	s.Lock()
 	s.data = make(map[interface{}]bool, s.capacity)
-	s.mux.Unlock()
+	s.Unlock()
 }
 
 // Add implements Set.Add
 func (s *SynchronizedSet) Add(v interface{}) {
-	s.mux.Lock()
+	s.Lock()
 	s.data[v] = true
-	s.mux.Unlock()
+	s.Unlock()
 }
 
 // Contains implements Set.Contains
 func (s *SynchronizedSet) Contains(v interface{}) bool {
-	s.mux.RLock()
-	r := s.data[v]
-	s.mux.RUnlock()
-	return r
+	s.RLock()
+	_, ok := s.data[v]
+	s.RUnlock()
+	return ok
+}
+
+// Range implements Set.Range
+func (s *SynchronizedSet) Range(f func(e interface{}) bool) {
+	s.RLock()
+	defer s.RUnlock()
+	for k, _ := range s.data {
+		if !f(k) {
+			return
+		}
+	}
+}
+
+// Remove implements Set.Remove
+func (s *SynchronizedSet) Remove(k interface{}) {
+	s.RLock()
+	delete(s.data, k)
+	s.RUnlock()
 }
