@@ -53,7 +53,7 @@ func (s *SynchronizedSet) Contains(v interface{}) bool {
 func (s *SynchronizedSet) Range(f func(e interface{}) bool) {
 	s.RLock()
 	defer s.RUnlock()
-	for k, _ := range s.data {
+	for k := range s.data {
 		if !f(k) {
 			return
 		}

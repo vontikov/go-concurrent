@@ -93,7 +93,7 @@ func (m *SynchronizedMap) Keys() []interface{} {
 	defer m.RUnlock()
 	sz := len(m.data)
 	r := make([]interface{}, 0, sz)
-	for k, _ := range m.data {
+	for k := range m.data {
 		r = append(r, k)
 	}
 	return r

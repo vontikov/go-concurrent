@@ -1,6 +1,6 @@
 package concurrent
 
-// Collection defines generic collection
+// Collection defines generic collection.
 type Collection interface {
 	// Size returns the collection size
 	Size() int
