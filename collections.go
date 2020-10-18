@@ -83,4 +83,7 @@ type Map interface {
 	// Remove removes the key-value pair specified by the key k from the map
 	// if it is present.
 	Remove(k interface{})
+
+	// Keys returns the keys contained in the map.
+	Keys() []interface{}
 }

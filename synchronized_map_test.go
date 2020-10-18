@@ -15,9 +15,9 @@ func TestSynchronizedMapEmpty(t *testing.T) {
 
 func TestSynchronizedMapPutGet(t *testing.T) {
 	const n = 100
-	const big = n * n << 2
+	const l = n * n << 2
 
-	m := NewSynchronizedMap(big)
+	m := NewSynchronizedMap(l)
 
 	var wg sync.WaitGroup
 
@@ -28,7 +28,7 @@ func TestSynchronizedMapPutGet(t *testing.T) {
 		go func(b int) {
 			for i := 0; i < n; i++ {
 				k := i + b
-				v := big + i + b
+				v := l + i + b
 				assert.Nil(t, m.Put(k, v))
 			}
 			wg.Done()
@@ -44,7 +44,7 @@ func TestSynchronizedMapPutGet(t *testing.T) {
 		go func(b int) {
 			for i := 0; i < n; i++ {
 				k := i + b
-				v := big + i + b
+				v := l + i + b
 				assert.NotNil(t, m.Put(k, v))
 			}
 			wg.Done()
@@ -62,7 +62,7 @@ func TestSynchronizedMapPutGet(t *testing.T) {
 	sort.Slice(s, func(i, j int) bool { return s[i] < s[j] })
 
 	for i := 0; i < n*n; i++ {
-		assert.Equal(t, big+i, s[i], "Items should be unique")
+		assert.Equal(t, l+i, s[i], "Items should be unique")
 	}
 }
 
@@ -83,9 +83,9 @@ func TestSynchronizedMapClear(t *testing.T) {
 
 func TestSynchronizedMapPutIfAbsent(t *testing.T) {
 	const n = 100
-	const big = n * n << 2
+	const l = n * n << 2
 
-	m := NewSynchronizedMap(big)
+	m := NewSynchronizedMap(l)
 
 	// first pass
 	var wg sync.WaitGroup
@@ -95,7 +95,7 @@ func TestSynchronizedMapPutIfAbsent(t *testing.T) {
 		go func(b int) {
 			for i := 0; i < n; i++ {
 				k := i + b
-				v := big + i + b
+				v := l + i + b
 				r := m.PutIfAbsent(k, v)
 				assert.True(t, r, "Should add the pair")
 			}
@@ -114,7 +114,7 @@ func TestSynchronizedMapPutIfAbsent(t *testing.T) {
 	sort.Slice(s, func(i, j int) bool { return s[i] < s[j] })
 
 	for i := 0; i < n*n; i++ {
-		assert.Equal(t, big+i, s[i], "Items should be unique")
+		assert.Equal(t, l+i, s[i], "Items should be unique")
 	}
 
 	// second pass
@@ -124,7 +124,7 @@ func TestSynchronizedMapPutIfAbsent(t *testing.T) {
 		go func(b int) {
 			for i := 0; i < n; i++ {
 				k := i + b
-				v := big + i + b
+				v := l + i + b
 				r := m.PutIfAbsent(k, v)
 				assert.False(t, r, "Should not add the pair")
 			}
@@ -139,9 +139,9 @@ func TestSynchronizedMapPutIfAbsent(t *testing.T) {
 
 func TestSynchronizedMapRange(t *testing.T) {
 	const n = 100
-	const big = n * n << 2
+	const l = n * n << 2
 
-	m := NewSynchronizedMap(big)
+	m := NewSynchronizedMap(l)
 
 	var wg sync.WaitGroup
 	base := 0
@@ -150,7 +150,7 @@ func TestSynchronizedMapRange(t *testing.T) {
 		go func(b int) {
 			for i := 0; i < n; i++ {
 				k := i + b
-				v := big + i + b
+				v := l + i + b
 				m.Put(k, v)
 			}
 			wg.Done()
@@ -173,15 +173,15 @@ func TestSynchronizedMapRange(t *testing.T) {
 
 	for i := 0; i < n*n; i++ {
 		assert.Equal(t, i, keys[i], "Keys should be unique")
-		assert.Equal(t, big+i, values[i], "Values should be unique")
+		assert.Equal(t, l+i, values[i], "Values should be unique")
 	}
 }
 
 func TestSynchronizedMapRemove(t *testing.T) {
 	const n = 100
-	const big = n * n << 2
+	const l = n * n << 2
 
-	m := NewSynchronizedMap(big)
+	m := NewSynchronizedMap(l)
 
 	var wg sync.WaitGroup
 
@@ -192,7 +192,7 @@ func TestSynchronizedMapRemove(t *testing.T) {
 		go func(b int) {
 			for i := 0; i < n; i++ {
 				k := i + b
-				v := big + i + b
+				v := l + i + b
 				assert.Nil(t, m.Put(k, v))
 			}
 			wg.Done()
@@ -223,9 +223,9 @@ func TestSynchronizedMapRemove(t *testing.T) {
 
 func TestSynchronizedMapContains(t *testing.T) {
 	const n = 100
-	const big = n * n << 2
+	const l = n * n << 2
 
-	m := NewSynchronizedMap(big)
+	m := NewSynchronizedMap(l)
 
 	var wg sync.WaitGroup
 
@@ -236,7 +236,7 @@ func TestSynchronizedMapContains(t *testing.T) {
 		go func(b int) {
 			for i := 0; i < n; i++ {
 				k := i + b
-				v := big + i + b
+				v := l + i + b
 				assert.Nil(t, m.Put(k, v))
 			}
 			wg.Done()
@@ -261,4 +261,33 @@ func TestSynchronizedMapContains(t *testing.T) {
 		base += n
 	}
 	wg.Wait()
+}
+
+func TestSynchronizedMapKeys(t *testing.T) {
+	const n = 100
+	const l = n * n << 2
+
+	m := NewSynchronizedMap(l)
+
+	// populate the map
+	var wg sync.WaitGroup
+	base := 0
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(b int) {
+			for i := 0; i < n; i++ {
+				k := i + b
+				v := l + i + b
+				assert.Nil(t, m.Put(k, v))
+			}
+			wg.Done()
+		}(base)
+		base += n
+	}
+	wg.Wait()
+
+	assert.Equal(t, n*n, m.Size())
+
+	keys := m.Keys()
+	assert.Equal(t, n*n, len(keys))
 }
