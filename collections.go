@@ -1,5 +1,8 @@
 package concurrent
 
+// Equals indicates whether l is "equal to" r.
+type Equals func(l, r interface{}) bool
+
 // Collection defines generic collection.
 type Collection interface {
 	// Size returns the collection size
@@ -18,6 +21,9 @@ type List interface {
 
 	// Get returns the element specified by its index i.
 	Get(i int) interface{}
+
+	// Remove the first occurrence of the element e from the list if it is present.
+	Remove(e interface{}, eq Equals) bool
 }
 
 // Queue defines ordered in FIFO manner collection of elements which may contain

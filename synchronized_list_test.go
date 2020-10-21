@@ -62,3 +62,27 @@ func TestSynchronizedListClear(t *testing.T) {
 	list.Clear()
 	assert.Equal(t, 0, list.Size(), "Should be empty")
 }
+
+func TestSynchronizedListRemove(t *testing.T) {
+	const n = 15
+
+	list := NewSynchronizedList(n)
+	for i := 0; i < n; i++ {
+		list.Add(i)
+	}
+	assert.Equal(t, n, list.Size())
+
+	eq := func(l, r interface{}) bool { return l.(int) == r.(int) }
+
+	var wg sync.WaitGroup
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(e int) {
+			assert.True(t, list.Remove(e, eq))
+			assert.False(t, list.Remove(e, eq))
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
+	assert.Equal(t, 0, list.Size(), "Should be empty")
+}

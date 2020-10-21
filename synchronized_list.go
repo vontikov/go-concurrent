@@ -48,3 +48,23 @@ func (l *SynchronizedList) Get(i int) interface{} {
 	l.RUnlock()
 	return v
 }
+
+// Remove implements List.Remove
+func (l *SynchronizedList) Remove(e interface{}, eq Equals) bool {
+	l.Lock()
+	defer l.Unlock()
+	for i, o := range l.data {
+		if eq(e, o) {
+			switch {
+			case i == 0:
+				l.data = l.data[1:]
+			case i == len(l.data)-1:
+				l.data = l.data[:len(l.data)-1]
+			default:
+				l.data = append(l.data[:i], l.data[i+1:]...)
+			}
+			return true
+		}
+	}
+	return false
+}
