@@ -137,6 +137,35 @@ func TestSynchronizedMapPutIfAbsent(t *testing.T) {
 	assert.Equal(t, n*n, m.Size(), "Items should not be added")
 }
 
+func TestSynchronizedMapComputeIfAbsent(t *testing.T) {
+	const n = 100
+
+	m := NewSynchronizedMap(0)
+
+	var wg sync.WaitGroup
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(i int) {
+			v := m.ComputeIfAbsent(i, func() interface{} { return i * i })
+			assert.Equal(t, i*i, v)
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
+	assert.Equal(t, n, m.Size())
+
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(i int) {
+			v := m.ComputeIfAbsent(i, func() interface{} { return i * i * i })
+			assert.Equal(t, i*i, v)
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
+	assert.Equal(t, n, m.Size())
+}
+
 func TestSynchronizedMapRange(t *testing.T) {
 	const n = 100
 	const l = n * n << 2
