@@ -77,8 +77,8 @@ type Map interface {
 
 	// ComputeIfAbsent computes the mapping function f and inserts its value
 	// (unless nil) under the key k, if the key does not exist and.
-	// Returns computed value or the existing value.
-	ComputeIfAbsent(k interface{}, f func() interface{}) interface{}
+	// Returns the mapping and the flag indicating if the mapping was created.
+	ComputeIfAbsent(k interface{}, f func() interface{}) (interface{}, bool)
 
 	// Contains returns true if the map contains the key k.
 	Contains(k interface{}) bool

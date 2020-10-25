@@ -54,19 +54,19 @@ func (m *SynchronizedMap) PutIfAbsent(k interface{}, v interface{}) bool {
 }
 
 // ComputeIfAbsent implements Map.ComputeIfAbsent.
-func (m *SynchronizedMap) ComputeIfAbsent(k interface{}, f func() interface{}) interface{} {
+func (m *SynchronizedMap) ComputeIfAbsent(k interface{}, f func() interface{}) (interface{}, bool) {
 	m.Lock()
 	defer m.Unlock()
 	if v, ok := m.data[k]; ok {
-		return v
+		return v, false
 	}
 
 	v := f()
 	if v == nil {
-		return nil
+		return nil, false
 	}
 	m.data[k] = v
-	return v
+	return v, true
 }
 
 // Contains implements Map.Contains.

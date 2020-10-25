@@ -146,7 +146,8 @@ func TestSynchronizedMapComputeIfAbsent(t *testing.T) {
 	for i := 0; i < n; i++ {
 		wg.Add(1)
 		go func(i int) {
-			v := m.ComputeIfAbsent(i, func() interface{} { return i * i })
+			v, ok := m.ComputeIfAbsent(i, func() interface{} { return i * i })
+			assert.True(t, ok)
 			assert.Equal(t, i*i, v)
 			wg.Done()
 		}(i)
@@ -157,7 +158,8 @@ func TestSynchronizedMapComputeIfAbsent(t *testing.T) {
 	for i := 0; i < n; i++ {
 		wg.Add(1)
 		go func(i int) {
-			v := m.ComputeIfAbsent(i, func() interface{} { return i * i * i })
+			v, ok := m.ComputeIfAbsent(i, func() interface{} { return i * i * i })
+			assert.False(t, ok)
 			assert.Equal(t, i*i, v)
 			wg.Done()
 		}(i)
