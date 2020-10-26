@@ -73,8 +73,8 @@ func (l *SynchronizedList) Remove(e interface{}, eq Equals) bool {
 func (l *SynchronizedList) Range(f func(e interface{}) bool) {
 	l.RLock()
 	defer l.RUnlock()
-	for k := range l.data {
-		if !f(k) {
+	for _, e := range l.data {
+		if !f(e) {
 			return
 		}
 	}

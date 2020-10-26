@@ -90,23 +90,11 @@ func TestSynchronizedListRemove(t *testing.T) {
 func TestSynchronizedListAddRange(t *testing.T) {
 	const n = 100
 
-	list := NewSynchronizedList(n / 2)
+	list := NewSynchronizedList(0)
 
-	var wg sync.WaitGroup
-	base := 0
 	for i := 0; i < n; i++ {
-		wg.Add(1)
-		go func(b int) {
-			for i := 0; i < n; i++ {
-				list.Add(i + b)
-			}
-			wg.Done()
-		}(base)
-		base += n
+		list.Add(i * i)
 	}
-	wg.Wait()
-
-	assert.Equal(t, n*n, list.Size(), "All items should be added")
 
 	var elms []interface{}
 	list.Range(func(e interface{}) bool {
@@ -114,6 +102,6 @@ func TestSynchronizedListAddRange(t *testing.T) {
 		return true
 	})
 	for i := 0; i < n; i++ {
-		assert.Equal(t, i, elms[i])
+		assert.Equal(t, i*i, elms[i])
 	}
 }
