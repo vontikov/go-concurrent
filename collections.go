@@ -24,6 +24,10 @@ type List interface {
 
 	// Remove the first occurrence of the element e from the list if it is present.
 	Remove(e interface{}, eq Equals) bool
+
+	// Range calls f sequentially for each element present in the list.
+	// If f returns false, range stops the iteration.
+	Range(f func(e interface{}) bool)
 }
 
 // Queue defines ordered in FIFO manner collection of elements which may contain
