@@ -45,6 +45,10 @@ type Queue interface {
 	// Peek retrieves, but does not remove, the head of the queue; returns nil
 	// if the queue is empty.
 	Peek() interface{}
+
+	// Range calls f sequentially for each element present in the queue.
+	// If f returns false, range stops the iteration.
+	Range(f func(e interface{}) bool)
 }
 
 // Set defines unordered collection of element which may not contain duplicates.

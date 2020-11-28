@@ -86,6 +86,26 @@ func (q *SynchronizedRingQueue) Capacity() int {
 	return len(q.buf)
 }
 
+// Range implements Queue.Range
+func (q *SynchronizedRingQueue) Range(f func(e interface{}) bool) {
+	q.RLock()
+	defer q.RUnlock()
+
+	if q.count <= 0 {
+		return
+	}
+
+	h := q.head
+	m := len(q.buf) - 1
+	for i := 0; i < q.count; i++ {
+		e := q.buf[h]
+		if !f(e) {
+			return
+		}
+		h = (h + 1) & m
+	}
+}
+
 func (q *SynchronizedRingQueue) resize() {
 	newBuf := make([]interface{}, q.count<<1)
 

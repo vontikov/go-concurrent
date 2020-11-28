@@ -60,3 +60,29 @@ func TestSynchronizedRingQueueOfferAndPoll(t *testing.T) {
 		})
 	}
 }
+
+func TestSynchronizedRingQueueRange(t *testing.T) {
+	const max = 1000
+
+	for i := 1; i < max; i++ {
+		q := NewSynchronizedRingQueue(2)
+		for j := 0; j < i; j++ {
+			q.Offer(j)
+		}
+
+		for k := 0; k < i/2; k++ {
+			q.Poll()
+		}
+
+		var b []int
+		q.Range(func(e interface{}) bool {
+			b = append(b, e.(int))
+			return true
+		})
+		assert.Equal(t, i-i/2, len(b))
+
+		for j := 0; j < i-i/2; j++ {
+			assert.Equal(t, j+i/2, b[j])
+		}
+	}
+}

@@ -87,7 +87,7 @@ func TestSynchronizedListRemove(t *testing.T) {
 	assert.Equal(t, 0, list.Size(), "Should be empty")
 }
 
-func TestSynchronizedListAddRange(t *testing.T) {
+func TestSynchronizedListRange(t *testing.T) {
 	const n = 100
 
 	list := NewSynchronizedList(0)
