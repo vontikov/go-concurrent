@@ -12,7 +12,7 @@ type SynchronizedRingQueue struct {
 }
 
 // NewSynchronizedRingQueue returns pointer to a new SynchronizedRingQueue instance
-func NewSynchronizedRingQueue(initialCapacity int) Queue {
+func NewSynchronizedRingQueue(initialCapacity int) *SynchronizedRingQueue {
 	if (initialCapacity < 2) || ((initialCapacity & (initialCapacity - 1)) != 0) {
 		panic("initial capacity must be power of 2")
 	}

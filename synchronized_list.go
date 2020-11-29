@@ -12,7 +12,7 @@ type SynchronizedList struct {
 }
 
 // NewSynchronizedList returns pointer to a new SynchronizedList instance
-func NewSynchronizedList(capacity int) List {
+func NewSynchronizedList(capacity int) *SynchronizedList {
 	return &SynchronizedList{
 		data:     make([]interface{}, 0, capacity),
 		capacity: capacity,

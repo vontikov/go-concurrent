@@ -11,7 +11,7 @@ type SynchronizedMap struct {
 }
 
 // NewSynchronizedMap returns pointer to a new SynchronizedMap instance.
-func NewSynchronizedMap(capacity int) Map {
+func NewSynchronizedMap(capacity int) *SynchronizedMap {
 	return &SynchronizedMap{
 		data: make(map[interface{}]interface{}, capacity),
 	}

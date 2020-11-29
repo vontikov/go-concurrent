@@ -33,7 +33,7 @@ func TestNewSynchronizedRingQueue(t *testing.T) {
 func TestSynchronizedRingQueueResize(t *testing.T) {
 	for c := 2; c < 1024; c <<= 1 {
 		t.Run("should be resized", func(t *testing.T) {
-			q := NewSynchronizedRingQueue(c).(*SynchronizedRingQueue)
+			q := NewSynchronizedRingQueue(c)
 			assert.Equal(t, c, q.Capacity())
 			for i := 0; i <= c; i++ {
 				q.Offer(0)
